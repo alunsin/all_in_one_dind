@@ -1,0 +1,26 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pod-dndx86
+spec:
+  automountServiceAccountToken: false
+  containers:
+  - name: test
+    command:
+    - /usr/local/bin/dockerd-entrypoint.sh
+    image: docker:dind
+    resources: {}
+    terminationMessagePolicy: FallbackToLogsOnError
+    securityContext:
+      privileged: true
+    volumeMounts:
+    - name: docker-graph-storage
+      mountPath: /var/lib/docker
+  restartPolicy: Never
+  terminationGracePeriodSeconds: 18
+  volumes:
+  - emptyDir: {}
+    name: docker-graph-storage
+
+status: {}
+

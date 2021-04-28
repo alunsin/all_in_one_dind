@@ -7,7 +7,48 @@ spec:
   containers:
   - name: test
     command:
-    - /usr/local/bin/dockerd-entrypoint.sh
+    - sh
+    args:
+    - -c
+    - |
+      set -ue
+      echo 'Starting Docker daemon'
+      nohup /usr/local/bin/dockerd-entrypoint.sh > logs.out 2>&1 &
+
+      echo "Waiting fo docerkd to start"
+      TIMEOUT=10
+      DAEMON="dockerd"
+      i=0
+      while [ $i -lt $TIMEOUT ] && ! /usr/bin/pgrep $DAEMON
+      do
+        echo "Number: $i"
+        i=$((i+1))
+        sleep 2
+      done
+
+      pid=`/usr/bin/pgrep $DAEMON`
+      if [ -z "$pid" ] ; then
+        echo "$DAEMON did not started after $(($TIMEOUT*2)) seconds"
+        exit 1
+
+      else
+        echo "$DAEMON pid:$pid"
+      fi
+      ps -aef | grep docker | grep -v grep
+      sleep 10
+      ps -aef
+      docker ps -a
+
+      echo "Starting all-in-one from quay.io"
+      docker container run quay.io/powercloud/all-in-one:0.2 lsb_release -a
+      echo "Starting all-in-one from quay.io done"
+
+      echo "Starting alpine from docker.io"
+      docker container run alpine cat /etc/alpine-release
+      echo "Starting alpine from docker.io done"
+      tail -f logs.out &
+      kill 0
+
     image: docker:dind
     resources: {}
     terminationMessagePolicy: FallbackToLogsOnError
@@ -18,9 +59,9 @@ spec:
       mountPath: /var/lib/docker
   restartPolicy: Never
   terminationGracePeriodSeconds: 18
+
   volumes:
   - emptyDir: {}
     name: docker-graph-storage
 
-status: {}
 

@@ -1,0 +1,20 @@
+#  curl -L https://github.com/estesp/manifest-tool/releases/download/v1.0.3/manifest-tool-linux-`go env GOARCH` -o /usr/local/bin/manifest-tool
+#  chmod +x /usr/local/bin/manifest-tool
+# REPO="quay.io/alunsin/all_in_one_dind"
+# VERSION="0.1"
+# cat > config.json << EOL
+# manifest-tool --debug --docker-cfg /.docker push from-spec registry.yaml
+#docker run -v ~/.docker:/.docker -it quay.io/powercloud/all-in-one
+
+image: $REPO:$VERSION
+manifests:
+  -
+    image: $REPO:$VERSION-ppc64le
+    platform:
+      architecture: ppc64le
+      os: linux
+  -
+    image: $REPO:$VERSION-amd64
+    platform:
+      architecture: amd64
+      os: linux

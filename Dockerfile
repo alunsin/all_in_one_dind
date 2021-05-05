@@ -9,7 +9,7 @@ ENV TF_VERSION ${TF_VERSION:-v0.12.29}
 RUN go get rsc.io/goversion \
     && GO111MODULE=on go get github.com/hashicorp/terraform@$TF_VERSION
 
-FROM debian:buster
+FROM debian:bullseye
 
 ARG GOLANG_VERSION
 ENV GOLANG_VERSION ${GOLANG_VERSION:-1.15.2}
@@ -37,34 +37,16 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     lsb-release && \
     rm -rf /var/lib/apt/lists/*
 
-RUN add-apt-repository "deb http://ppa.launchpad.net/ansible/ansible/ubuntu trusty main" \
-    && apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 93C4A3FD7BB9C367 \
-    && apt-get update && apt-get install -y --no-install-recommends \
-    ansible \
+RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
     ca-certificates \
     curl \
-    default-jdk \
     file \
     git \
-    gcc \
-    jq \
     make \
-    mercurial \
     openssh-client \
     pkg-config \
     procps \
-    python \
-    python-dev \
-    python-gflags \
-    python-openssl \
-    python-pip \
-    python-yaml \
-    python3 \
-    python3-distutils \
-    python3-gflags \
-    python3-pip \
-    python3-yaml \
     rsync \
     unzip \
     wget \
